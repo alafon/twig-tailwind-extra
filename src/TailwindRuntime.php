@@ -19,7 +19,11 @@ final class TailwindRuntime implements RuntimeExtensionInterface
     {
         $cache ??= new FilesystemAdapter();
 
-        $this->factory = TailwindMerge::factory()->withCache(new Psr16Cache($cache));
+        if (null !== (new \ReflectionMethod(\Psr\SimpleCache\CacheInterface::class, 'get'))->getReturnType()) {
+            $this->factory = TailwindMerge::factory();
+        } else {
+            $this->factory = TailwindMerge::factory()->withCache(new Psr16Cache($cache));
+        }
     }
 
     public function merge(string|array|null $classes, array $configuration = []): string
